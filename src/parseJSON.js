@@ -4,7 +4,7 @@
 // but you're not, so you'll write it from scratch:
 var parseJSON = function(json) {
   // your code goes here
-  console.log('JSON.parse(json): ');
+  console.log('JSON.parse(json):');
   console.log(JSON.parse(json));
 
   var counter = 0;
@@ -12,49 +12,70 @@ var parseJSON = function(json) {
   var result;
 
   var helper = function(str) {
-    var char = json[counter]
-    if (counter < end){
+    var char = str[counter];
+    if (counter < end) {
       if (char === '[') {
-        counter++;
         return arrayBuilder(str);
       } else if (char === '{') {
-        counter++;
         return objBuilder(str);
       } else if (char === '"') {
+        return stringBuilder(str);
+      } else if (char === ' ' || char === ',' || char === ':') {
         counter++;
-        return stringHelper(str);
+        return helper(str);
+      } else if (char === 'n') {
+        char += 4;
+        return null;
+      } else if (char === 't') {
+        char += 4;
+        return true;
+      } else if (char === 'f') {
+        char += 5;
+        return false;
       }
+    } else {
+      return result;
     }
-
-  }
-
+  };
 
   var arrayBuilder = function(str) {
     var tempArr = [];
+    counter++;
     while (str[counter] !== ']') {
+      //console.log(helper(str));
       tempArr.push(helper(str));
-      if (str[counter] === ',') {
-        counter += 2;
-      }
     }
+console.log(tempArr);
     return tempArr;
-  }
+  };
 
   var objBuilder = function(str) {
+    var tempObj = {};
+    //var char = str[counter];
+    counter++;
+    //console.log(tempObj);
+    while (str[counter] !== '}') {
+      //console.log(str[counter]);
+      var tempKey = helper(str);
+      tempObj[tempKey] = helper(str);
+    }
+    return tempObj;
+  };
 
-  }
-
-  var stringHelper = function(str) {
-    var str = '';
+  var stringBuilder = function(str) {
+    var tempStr = '';
+    //var char = str[counter];
+    counter++;
     while (str[counter] !== '"') {
-      str += str[counter];
+      tempStr += str[counter];
       counter++;
     }
     counter++;
-    return str;
-  }
+    return tempStr;
+  };
 
-  helper(json);
 
-  return result;
+  return helper(json);
+  // console.log(result);
+  // return result;
 };
